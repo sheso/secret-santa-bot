@@ -1,0 +1,21 @@
+{
+  "name": "secretsantabot",
+  "version": "1.0.0",
+  "description": "Secret Santa for Elbrus Bootcamp",
+  "main": "bot.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "secret_santa",
+    "telegram_bot"
+  ],
+  "author": "Sofya",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.11.5",
+    "telegraf": "^3.38.0",
+    "telegraf-inline-menu": "^5.3.0"
+  }
+}
