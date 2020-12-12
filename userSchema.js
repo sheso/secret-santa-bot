@@ -1,14 +1,16 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema( {
-	telegram_id: Number,
+	telegramId: Number,
+	status: String,
 	username: String,
 	realName: String,
 	likes: String,
 	giftTo: mongoose.Schema.ObjectId,
 });
 
-const User = mongoose.model('User', userSchema);
+userSchema.index({ telegramId: 1 }, { unique: true });
 
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
