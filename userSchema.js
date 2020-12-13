@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema( {
 	status: String,
 	username: String,
 	realName: String,
-	likes: String,
+	letter: String,
 	giftTo: mongoose.Schema.ObjectId,
 });
 

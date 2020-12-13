@@ -3,85 +3,62 @@ const { Telegraf } = require('telegraf');
 require('dotenv').config();
 
 const User = require('./userSchema');
-const replies = require('./replies');
+const { 
+	AWAITS_GREETING, 
+	AWAITS_LETTER,
+	INFO_COMPLETE,
+	replies, 
+} = require('./replies');
+const { getOrCreateUser } = require('./helpers');
 
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
 	err ? console.log(err) : console.log('Connect successful');
 });
 
-const replyKeyboard = [[
-	{
-		text: 'Представиться', 
-		callback_data: 'greeting'
-	}, {
-		text: 'Написать Санте', 
-		callback_data: 'santa_letter'
-	}]];
-
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.start(async ctx => {
 	const {from: {id: telegramId, username}} = ctx.update.message;
-	let user = await User.findOne({telegramId: telegramId});
-	if (!user) {
-		const user = new User({telegramId, username});
-		await user.save();
-	}
-	ctx.reply(replies.start);
+	const user = await getOrCreateUser(telegramId, username);
+	user.status = AWAITS_GREETING;
+	await user.save();
+	ctx.reply(replies.startGetName);
 });
 
 bot.help(ctx => ctx.reply(replies.help));
 
 bot.on('text', async (ctx) => {
 	const {from: {id: telegramId, username}} = ctx.update.message;
-	let user = await User.findOne({telegramId: telegramId});
-	if (!user) {
-		user = new User({telegramId, username});
+	const user = await getOrCreateUser(telegramId, username);
+	let msg = ctx.update.message.text;
+
+	if (user.status === AWAITS_GREETING) {
+		user.realName = msg;
+		user.status = AWAITS_LETTER;
 		await user.save();
-	}
-
-	if (user.status === 'awaits_greeting') {
-		user.realName = ctx.update.message.text;
+		ctx.reply(replies.getLetter);
+	} else if (user.status === AWAITS_LETTER) {
+		user.letter = msg;
+		user.status = INFO_COMPLETE;
 		await user.save();
-		ctx.reply(replies.got_info);
-	} else if (user.status === 'awaits_letter') {
-		user.likes = ctx.update.message.text;
-		await user.save();
-		ctx.reply(replies.got_info);
-	}
-
-	ctx.reply('Я разговариваю только кнопками', {reply_markup: {inline_keyboard: replyKeyboard}});
-});
-
-bot.on('callback_query', async ctx => {
-	const {from: {id: telegramId, username}} = ctx.update.callback_query;
-	let user = await User.findOne({telegramId: telegramId});
-
-	switch (ctx.callbackQuery.data) {
-		case 'greeting':
-			if (user) {
-				user.status = 'awaits_greeting';
-				await user.save();
-				ctx.reply(replies.greeting_instruction);
-			}	else {
-				const user = new User({telegramId, username, status: 'awaits_greeting'});
-				await user.save();
-				ctx.reply(replies.greeting_instruction);
-			}
-			break;
-		case 'santa_letter':
-			if (user) {
-				user.status = 'awaits_letter';
-				await user.save();
-				ctx.reply(replies.letter_instruction);
-			}	else {
-				const user = new User({telegramId, username, status: 'awaits_letter'});
-				await user.save();
-				ctx.reply(replies.letter_instruction);
-			}
-			break;
-
+		await ctx.reply(`Отлично, эльфы записали, что тебя зовут ${user.realName}, и вот что они передадут Санте: \n"${user.letter}"`);
+		ctx.reply(replies.changeSuggest);		
 	}
 });
+
+bot.on('sticker', async (ctx) => {
+	const {from: {id: telegramId, username}} = ctx.update.message;
+	// console.log(ctx.update.message.sticker.file_id);
+	const user = await getOrCreateUser(telegramId, username);
+	if (user.status === AWAITS_GREETING) {
+		await ctx.replyWithSticker('CAACAgIAAxkBAAPrX9YooNLFahfAQf75N-dJ_mnjY_QAAmEFAAIjBQ0AAeFXLtJAne9jHgQ');
+		ctx.reply(replies.catGetGreeting);
+	} else if (user.status === AWAITS_LETTER) {
+		await ctx.replyWithSticker('CAACAgIAAxkBAAPsX9YqkPxairjvW3BTWsJbiCeQVEIAAtgHAAIYQu4IFThuKDt655YeBA');
+		ctx.reply(replies.sharkGetLetter);
+	} else {
+		ctx.replyWithSticker('CAACAgIAAxkBAAIBFV_WLxr-Em6SwdFmzRU5sIMT32czAAJrAQAC4TXjCPz8-3Ag2KEvHgQ');
+	}
+})
 
 bot.launch();
