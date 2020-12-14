@@ -1,6 +1,7 @@
 const User = require('./userSchema');
 const { ASSIGNMENT_SENT } = require('./replies');
 require('dotenv').config();
+const _ = require('lodash');
 
 const getOrCreateUser = async (telegramId, username) => {
     let user = await User.findOne({telegramId});
@@ -15,29 +16,9 @@ const getOrCreateUser = async (telegramId, username) => {
     return user;
 };
 
-const shuffle = array => {
-	const origin = [...array];
-	const result = [];
-	let length = origin.length;
-	while (length > 0) {
-		const rand = Math.floor(Math.random() * length);
-		result.push(origin[rand]);
-		origin.splice(rand, 1);
-		length--;
-	}
-
-	const same = result.some((el, i) => el === array[i]);
-
-	if (same) {
-		return shuffle(array);
-	}
-
-	return result;
-};
-
 const createAssignments = async () => {
-    let participants = await User.find({});
-    let shuffledParticipants = shuffle(participants);
+    let participants = await User.find({realName: {$ne: null}, letter: {$ne: null}});
+    let shuffledParticipants = _.shuffle(participants);
     
     const promises = participants.map(async (participant, i) => {
         participant.giftTo = shuffledParticipants[i]._id;
@@ -46,20 +27,32 @@ const createAssignments = async () => {
     await Promise.all(promises);
 };
 
+const getUserInfo = (name, letter) => {
+	return `🎄🎄🎄 \nОтлично, эльфы записали, что тебя зовут ${name}, и вот что они передадут Санте: \n"${letter}"\n🎄🎄🎄`
+}
+
+const getAssignmentText = (name, username, letter) => {
+	return `🎁🎁🎁 \nПришло время! Подарок от тебя будет ждать ${name} (@${username}). И вот какое письмо передают тебе эльфы: \n"${letter}"\nУдачи и хо-хо-хо!\n🎁🎁🎁`;
+}
+
+const getUserById = async (id) => {
+	return await User.findById(id);
+}
+
 const sendAssignments = async (telegram) => {
-    const participants = await User.find({});
+    const participants = await User.find({giftTo: {$ne: null}});
     for (let participant of participants) {
         if (participant.status === ASSIGNMENT_SENT) {
             continue;
         }
         const recipient = participants.find(man => {
             return man._id.equals(participant.giftTo);
-        });
-        const text = `Пришло время! Подарок от тебя будет ждать ${recipient.realName} (@${recipient.username}). И вот какое письмо передают тебе эльфы: \n"${recipient.letter}"\nУдачи и хо-хо-хо!`;
-        await telegram.sendMessage(participant.telegramId, text);
+				});
+				const text = getAssignmentText(recipient.realName, recipient.username, recipient.letter);
+       	await telegram.sendMessage(participant.telegramId, text);
         participant.status = ASSIGNMENT_SENT;
         await participant.save();
     }
 }
 
-module.exports = { getOrCreateUser, createAssignments, sendAssignments };
+module.exports = { getOrCreateUser, createAssignments, sendAssignments, getAssignmentText, getUserInfo, getUserById };

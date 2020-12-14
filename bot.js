@@ -11,7 +11,7 @@ const {
 	replies,
 	ASSIGNMENT_SENT, 
 } = require('./replies');
-const { getOrCreateUser, createAssignments, sendAssignments } = require('./helpers');
+const { getOrCreateUser, createAssignments, sendAssignments, getAssignmentText, getUserInfo, getUserById } = require('./helpers');
 
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
 	err ? console.log(err) : console.log('Connect successful');
@@ -32,7 +32,7 @@ bot.start(async ctx => {
 	const {from: {id: telegramId, username}} = ctx.update.message;
 	const user = await getOrCreateUser(telegramId, username);
 	if (user.status === ASSIGNMENT_SENT) {
-		await ctx.reply(replies.assignmentSent);
+		await ctx.reply(getAssignmentText(user.realName, user.username, user.letter));
 		return;
 	}
 	user.status = AWAITS_GREETING;
@@ -54,7 +54,8 @@ bot.on('text', async (ctx) => {
 	}
 
 	if (user.status === ASSIGNMENT_SENT) {
-		await ctx.reply(replies.assignmentSent);
+		const recipient = await getUserById(user.giftTo);
+		await ctx.reply(getAssignmentText(recipient.realName, recipient.username, recipient.letter));
 		return;
 	}
 
@@ -67,7 +68,8 @@ bot.on('text', async (ctx) => {
 		user.letter = msg;
 		user.status = INFO_COMPLETE;
 		await user.save();
-		await ctx.reply(`Отлично, эльфы записали, что тебя зовут ${user.realName}, и вот что они передадут Санте: \n"${user.letter}"`);
+		const text = getUserInfo(user.realName, user.letter);
+		await ctx.reply(text);
 		await ctx.reply(replies.changeSuggest);		
 	}
 });
