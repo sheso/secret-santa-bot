@@ -32,7 +32,7 @@ bot.start(async ctx => {
 	const {from: {id: telegramId, username}} = ctx.update.message;
 	const user = await getOrCreateUser(telegramId, username);
 	if (user.status === ASSIGNMENT_SENT) {
-		await ctx.reply(getAssignmentText(user.realName, user.username, user.letter));
+		ctx.reply(replies.assignmentSent);
 		return;
 	}
 	user.status = AWAITS_GREETING;
