@@ -18,13 +18,20 @@ const getOrCreateUser = async (telegramId, username) => {
 
 const createAssignments = async () => {
     let participants = await User.find({realName: {$ne: null}, letter: {$ne: null}});
-    let shuffledParticipants = _.shuffle(participants);
+		let shuffledParticipants = _.shuffle(participants);
+		let isAnyCoincide = shuffledParticipants.some((el, i) => participants[i] === el);
+
+		if (isAnyCoincide) {
+			createAssignments();
+			return;
+		}
     
     const promises = participants.map(async (participant, i) => {
         participant.giftTo = shuffledParticipants[i]._id;
         await participant.save();
-    });
-    await Promise.all(promises);
+		});
+		
+		await Promise.all(promises);
 };
 
 const getUserInfo = (name, letter) => {
