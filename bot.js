@@ -54,8 +54,9 @@ bot.on('text', async (ctx) => {
 	}
 
 	if (user.status === ASSIGNMENT_SENT) {
-		const recipient = await getUserById(user.giftTo);
-		await ctx.reply(getAssignmentText(recipient.realName, recipient.username, recipient.letter));
+		// const recipient = await getUserById(user.giftTo);
+		// await ctx.reply(getAssignmentText(recipient.realName, recipient.username, recipient.letter));
+		ctx.reply(replies.assignmentSent);
 		return;
 	}
 

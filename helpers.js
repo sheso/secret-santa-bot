@@ -5,7 +5,7 @@ const _ = require('lodash');
 
 const getOrCreateUser = async (telegramId, username) => {
     let user = await User.findOne({telegramId});
-	if (!user) {
+		if (!user) {
         if (telegramId === 191062132) {
             user = new User({telegramId, username, role: 'admin'});
         } else {
