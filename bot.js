@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Telegraf } = require('telegraf');
+const Status = require('./statusSchema');
 require('dotenv').config();
 
 const { 
