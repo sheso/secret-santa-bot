@@ -14,7 +14,7 @@ const {
 const { getOrCreateUser, createAssignments, sendAssignments, getAssignmentText, getUserInfo, getUserById } = require('./helpers');
 
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
-	err ? console.log(err) : console.log('Connect successful');
+	err ? console.log(err) : console.log('Connect successful, good job');
 });
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
