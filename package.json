@@ -4,7 +4,8 @@
   "description": "Secret Santa for Elbrus Bootcamp",
   "main": "bot.js",
   "scripts": {
-    "test": "jest"
+		"test": "jest",
+		"start": "node bot.js"
   },
   "keywords": [
     "secret_santa",

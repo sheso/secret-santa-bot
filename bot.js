@@ -26,7 +26,7 @@ bot.use(async (ctx, next) => {
 		console.log(error);
 		await ctx.reply('Что-то пошло не так');
 	}
-})
+});
 
 bot.start(async ctx => {
 	const {from: {id: telegramId, username}} = ctx.update.message;
