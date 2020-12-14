@@ -22,7 +22,7 @@ const createAssignments = async () => {
 		let isAnyCoincide = shuffledParticipants.some((el, i) => participants[i] === el);
 
 		if (isAnyCoincide) {
-			createAssignments();
+			await createAssignments();
 			return;
 		}
     
