@@ -1,5 +1,5 @@
 const User = require('./userSchema');
-const { ASSIGNMENT_SENT } = require('./replies');
+const { ASSIGNMENT_SENT, INFO_COMPLETE } = require('./replies');
 require('dotenv').config();
 const _ = require('lodash');
 
@@ -17,7 +17,7 @@ const getOrCreateUser = async (telegramId, username) => {
 };
 
 const createAssignments = async () => {
-    let participants = await User.find({realName: {$ne: null}, letter: {$ne: null}});
+    let participants = await User.find({status: INFO_COMPLETE});
 		let shuffledParticipants = _.shuffle(participants);
 		let isAnyCoincide = shuffledParticipants.some((el, i) => participants[i] === el);
 
@@ -47,7 +47,7 @@ const getUserById = async (id) => {
 }
 
 const sendAssignments = async (telegram) => {
-    const participants = await User.find({giftTo: {$ne: null}});
+    const participants = await User.find({giftTo: {$ne: null}, status: INFO_COMPLETE});
     for (let participant of participants) {
         if (participant.status === ASSIGNMENT_SENT) {
             continue;

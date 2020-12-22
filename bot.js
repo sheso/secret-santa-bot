@@ -9,6 +9,7 @@ const {
 	INFO_COMPLETE,
 	ADMIN,
 	RUN_PHASE_TWO,
+	RUN_PHASE_THREE,
 	replies,
 	ASSIGNMENT_SENT, 
 } = require('./replies');
@@ -48,7 +49,7 @@ bot.on('text', async (ctx) => {
 	const user = await getOrCreateUser(telegramId, username);
 	let msg = ctx.update.message.text;
 
-	if (user.role === ADMIN && msg === RUN_PHASE_TWO) {
+	if (user.role === ADMIN && (msg === RUN_PHASE_TWO || msg === RUN_PHASE_THREE)) {
 		await createAssignments();
 		await sendAssignments(ctx.telegram);
 		return;

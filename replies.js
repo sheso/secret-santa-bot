@@ -4,6 +4,7 @@ const INFO_COMPLETE = 'info_complete';
 const ASSIGNMENT_SENT = 'assignment_sent';
 const ADMIN = 'admin';
 const RUN_PHASE_TWO = 'Отдать приказ 66';
+const RUN_PHASE_THREE = 'Слоупоки вперед';
 
 const replies = {
 	startGetName: '🎀🎀🎀\nПривет. Добро пожаловать в 🎅Тайного Санту🎅! Ответь-ка мне на два вопроса. Первый - как тебя зовут? Представься полностью, чтобы Санта тебя нашел.\n🎀🎀🎀',
@@ -15,4 +16,4 @@ const replies = {
 	assignmentSent: 'Вы уже получили своего одариваемого 🎅',
 }
 
-module.exports = { replies, AWAITS_GREETING, AWAITS_LETTER, INFO_COMPLETE, ASSIGNMENT_SENT, ADMIN, RUN_PHASE_TWO };
+module.exports = { replies, AWAITS_GREETING, AWAITS_LETTER, INFO_COMPLETE, ASSIGNMENT_SENT, ADMIN, RUN_PHASE_TWO, RUN_PHASE_THREE };
