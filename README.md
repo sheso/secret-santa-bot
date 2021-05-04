@@ -1,27 +1,26 @@
 # Secret Santa Bot
 
-Телеграм бот для игры в Тайного Санту.
+Telegram bot to play Secret Santa
 
-## Зачем нужен бот?
+## Why do I need this bot?
 
-Раньше в Тайного Санту играли так: все складывали бумажки со своими именами в шляпу, а после тащили их и втайне дарили подарок тому, кто попался на бумажке.  
-Не самое удобное решение - можно было попасться самому себе, бумажка просвечивает, а кто-то мог специально сложить бумажку как-то особенно, чтобы потом узнать, кто его Тайный Санта.  
-Пришло время современных решений - просто напиши телеграм-боту, он сам всех перемешает и сообщит, кому дарить подарок!
+We used to play Secret Santa the old way: with pieces of paper in the hat. Not the ideal way to play: someone could see other's Secret Santee or you coukd pick the one with your name. So that's why we need digital solution - this bot.
+It will gather everybody's names, mix it and then hand out the names to all the Secret Santas without any hassle.
 
-## Возможности
+## Features
 
-Бот собирает имена, ники в телеграме и пожелания, чего бы пользователю хотелось получить в подарок.  
-Когда все, кто хотел, записался, администратор бота запускает перемешивание и всем участникам приходят сообщения, кто кому дарит подарок.  
-Ни один юзер при этом не в курсе, кто его Тайный Санта.  
-Время дарить подарки!
+This bot gathers names of every participant with their "Santa letters" and telegram nicknames.
+When everyone sent their name and letter, administrator starts the mixing stage and that's when everybody gets their Secret Santee.
+No one knows who will he receive the gift from.
+Time to get elves to work!
 
-## Технологии
+## Tech stack
 
 * Node.js
 * MongoDB 
 * Telegram API
 
-## Планы развития
+## Roadmap
 
-Реализовать возможность создавать отдельные "круги" для разных компаний, которые хотят перемешаться внутри себя и сыграть в Тайного Санту.  
-Передавать создателю круга права администратора для его компании.
+Separate rooms for different groups of people so different groups could play independently.
+Make admin interface - for someone who will be creating those rooms.
